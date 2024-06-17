@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: 'KBO-Dia-Gothic', sans-serif;
+    @apply text-text
+}
+
+@font-face {
+    font-family: 'KBO-Dia-Gothic';
+    src: url('./fonts/KBO-Dia-Gothic_bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'KBO-Dia-Gothic';
+    src: url('./fonts/KBO-Dia-Gothic_medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'KBO-Dia-Gothic';
+    src: url('./fonts/KBO-Dia-Gothic_light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
