@@ -1,32 +1,37 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { supabase } from '@/lib/supabaseClient';
-import IconMenu from '@/assets/icons/IconMenu.vue';
-import { useDayjs } from '@/composables/date';
+import dayjs from 'dayjs';
+import { useGetTeamImage } from '@/composables/team';
 
-const countries = ref<any>([]);
+const games = ref<any>([]);
 
 async function getCountries() {
-  const { data } = await supabase.from('games').select();
-  countries.value = data;
+  const { data } = await supabase
+    .from('games')
+    .select(
+      `id, home_club_id, home_club:clubs!games_home_club_id_fkey (id, name), away_club_id, away_club:clubs!games_away_club_id_fkey (id, name), stadium_id, stadium:stadiums!games_stadium_id_fkey (id, name, address), home_score, away_score, match_day`,
+    )
+    .gte('match_day', dayjs().hour(0).minute(0).second(0).toISOString())
+    .lte('match_day', dayjs().hour(23).minute(59).second(59).toISOString());
+  games.value = data;
 }
+
 onMounted(() => {
   getCountries();
 });
 </script>
 <template>
   <div class="flex flex-col gap-[20px]">
-    <div class="flex justify-between items-center">
-      <div class="flex gap-[4px] items-center">
-        <img src="/logo.png" class="w-[40px]" alt="logo" />
-        <p class="font-bold text-[20px]">야구 달력</p>
-      </div>
-      <icon-menu class="cursor-pointer w-[25px] h-[25px]" />
-    </div>
     <div class="flex flex-col">
-      <div v-for="country in countries">
-        <!--        {{ country }}-->
-        {{ useDayjs()(country.match_day).format('YYYY-MM-DD HH:mm') }}
+      오늘의 경기
+      {{ dayjs().hour(0).minute(0).second(0).format('YYYY-MM-DD') }}
+      <div v-for="game in games">
+        <img :src="useGetTeamImage(game.home_club.name)" />
+        {{
+          `${game.home_club.name} ${game?.home_score}:${game?.away_score} ${game.away_club.name} ${game.stadium.name}`
+        }}
+        <img :src="useGetTeamImage(game.away_club.name)" />
       </div>
     </div>
   </div>

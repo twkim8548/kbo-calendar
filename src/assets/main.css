@@ -4,6 +4,8 @@
 
 body {
     font-family: 'KBO-Dia-Gothic', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
     @apply text-text
 }
 
