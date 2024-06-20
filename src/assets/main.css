@@ -6,7 +6,7 @@ body {
     font-family: 'KBO-Dia-Gothic', sans-serif;
     max-width: 600px;
     margin: 0 auto;
-    @apply text-text
+    @apply text-gray-900
 }
 
 @font-face {
@@ -26,4 +26,23 @@ body {
     src: url('./fonts/KBO-Dia-Gothic_light.woff') format('woff');
     font-weight: 300;
     font-style: normal;
+}
+
+.fade-enter-active {
+    animation: fade .05s ;
+}
+
+.fade-leave-active {
+    animation: fade .05s reverse;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0.1;
+        transform: scale(.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

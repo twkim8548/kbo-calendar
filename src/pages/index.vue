@@ -1,38 +1,101 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { supabase } from '@/lib/supabaseClient';
-import dayjs from 'dayjs';
-import { useGetTeamImage } from '@/composables/team';
+import { ref, watch } from 'vue';
+import dayjs, { Dayjs } from 'dayjs';
+import { useGetTeamImage, useGetTeamNaverInitial } from '@/composables/team';
+import Calendar from '@/components/Calendar.vue';
+import { useGameStore } from '@/stores/game';
+import { storeToRefs } from 'pinia';
 
-const games = ref<any>([]);
+const gameStore = useGameStore();
 
-async function getCountries() {
-  const { data } = await supabase
-    .from('games')
-    .select(
-      `id, home_club_id, home_club:clubs!games_home_club_id_fkey (id, name), away_club_id, away_club:clubs!games_away_club_id_fkey (id, name), stadium_id, stadium:stadiums!games_stadium_id_fkey (id, name, address), home_score, away_score, match_day`,
-    )
-    .gte('match_day', dayjs().hour(0).minute(0).second(0).toISOString())
-    .lte('match_day', dayjs().hour(23).minute(59).second(59).toISOString());
-  games.value = data;
-}
+const showType = ref('today');
+const { games } = storeToRefs(gameStore);
 
-onMounted(() => {
-  getCountries();
+const openNaverPreview = (date: Dayjs, homeId: number, awayId: number) => {
+  window.open(
+    `https://m.sports.naver.com/game/${date.format('YYYYMMDD')}${useGetTeamNaverInitial(awayId)}${useGetTeamNaverInitial(homeId)}02024`,
+    '_blank',
+  );
+};
+
+watch(showType, () => {
+  switch (showType.value) {
+    case 'today': {
+      gameStore.selectGames(
+        dayjs().hour(0).minute(0).second(0),
+        dayjs().hour(23).minute(59).second(59),
+      );
+      break;
+    }
+  }
 });
 </script>
 <template>
-  <div class="flex flex-col gap-[20px]">
-    <div class="flex flex-col">
-      오늘의 경기
-      {{ dayjs().hour(0).minute(0).second(0).format('YYYY-MM-DD') }}
-      <div v-for="game in games">
-        <img :src="useGetTeamImage(game.home_club.name)" />
-        {{
-          `${game.home_club.name} ${game?.home_score}:${game?.away_score} ${game.away_club.name} ${game.stadium.name}`
-        }}
-        <img :src="useGetTeamImage(game.away_club.name)" />
+  <main class="flex flex-col gap-[20px]">
+    <div class="overflow-x-auto flex items-center shrink-0 justify-center gap-[10px]">
+      <button
+        class="px-[4px] py-[2px] border rounded-md text-xs shadow-sm cursor-pointer"
+        :class="
+          showType === 'today'
+            ? 'bg-accent text-white border-accent'
+            : 'border-gray-300 hover:bg-gray-50'
+        "
+        @click="showType = 'today'"
+      >
+        오늘 경기
+      </button>
+      <button
+        class="px-[4px] py-[2px] border rounded-md text-xs shadow-sm cursor-pointer"
+        :class="
+          showType === 'calendar'
+            ? 'bg-accent text-white border-accent'
+            : 'border-gray-300 hover:bg-gray-50'
+        "
+        @click="showType = 'calendar'"
+      >
+        일정 달력
+      </button>
+    </div>
+    <div class="flex flex-col items-center gap-[15px]" v-if="showType === 'today'">
+      <div class="flex flex-col items-center">
+        <p class="text-sm">
+          {{ dayjs().hour(0).minute(0).second(0).format('YYYY-MM-DD') }}
+        </p>
+        <p class="text-xl font-bold text-primary">오늘의 경기</p>
+      </div>
+      <div class="flex flex-col gap-[20px] items-center">
+        <div
+          class="flex items-center gap-[5px]"
+          v-for="game in games?.[dayjs().format('YYYY-MM-DD')]"
+          :key="`today${game.id}`"
+        >
+          <div class="flex items-center gap-[10px]">
+            <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[50px]" alt="logo" />
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-[5px]">
+                <p class="font-bold">
+                  {{ game?.home_club?.name }}
+                </p>
+                :
+                <p class="font-bold">
+                  {{ game?.away_club?.name }}
+                </p>
+              </div>
+              <p class="text-xs">
+                {{ game.stadium.name }}
+              </p>
+              <button
+                class="border-gray-300 px-[4px] py-[2px] border rounded-md text-xs shadow-sm cursor-pointer hover:bg-gray-50"
+                @click="openNaverPreview(dayjs(), game?.home_club?.id, game?.away_club?.id)"
+              >
+                경기 분석
+              </button>
+            </div>
+            <img :src="useGetTeamImage(game?.away_club?.id)" class="w-[50px]" alt="logo" />
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <calendar v-else />
+  </main>
 </template>
