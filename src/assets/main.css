@@ -6,6 +6,7 @@ body {
     font-family: 'KBO-Dia-Gothic', sans-serif;
     max-width: 600px;
     margin: 0 auto;
+    -webkit-tap-highlight-color: transparent;
     @apply text-gray-900
 }
 
