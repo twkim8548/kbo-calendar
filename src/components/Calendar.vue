@@ -240,33 +240,41 @@ watch(selectedDate, () => {
             v-for="date in dates"
             :key="date.toString()"
             type="button"
-            class="flex flex-col hover:bg-gray-100 focus:z-10 min-h-[130px]"
-            :class="date.get('M') === selectedDate.get('M') ? 'bg-white' : 'bg-gray-50'"
+            class="flex flex-col hover:bg-gray-100 focus:z-10 min-h-[130px] bg-white"
           >
-            <div
-              class="flex flex-col gap-[5px] h-full py-[5px]"
-              v-if="date.get('M') === selectedDate.get('M')"
-            >
+            <div class="flex flex-col h-full">
               <div
                 v-for="game in games?.[date.format('YYYY-MM-DD')]"
-                class="flex items-center w-full justify-between"
+                class="flex flex-col items-center w-full justify-center border-b border-b-gray-200 h-[200px] text-white gap-[10px] px-[5px]"
+                :style="{ backgroundColor: game?.home_club?.bg_color }"
                 :key="game.id"
               >
-                <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[12px]" alt="logo" />
+                <div class="flex flex-col gap-[3px] items-center">
+                  <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[20px]" alt="logo" />
+                  <p class="text-xs break-keep text-center">
+                    {{ game?.home_club?.name }}
+                  </p>
+                </div>
                 <div
-                  class="flex items-center text-xs"
+                  class="flex items-center text-xs gap-[3px] text-white font-normal"
                   v-if="game?.home_score !== null && game?.away_score !== null"
                 >
-                  <p :class="{ 'text-secondary': game?.home_score > game?.away_score }">
+                  <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
                     {{ game?.home_score ?? 0 }}
                   </p>
                   :
-                  <p :class="{ 'text-secondary': game?.away_score > game?.home_score }">
+                  <p :class="{ 'font-bold': game?.away_score > game?.home_score }">
                     {{ game?.away_score ?? 0 }}
                   </p>
                 </div>
-                <div v-else class="flex items-center text-xs">예정</div>
-                <img :src="useGetTeamImage(game?.away_club?.id)" class="w-[12px]" alt="logo" />
+                <div v-else class="flex items-center text-xs text-gray-400">예정</div>
+
+                <div class="flex flex-col gap-[3px] items-center">
+                  <p class="text-xs break-keep text-center">
+                    {{ game?.away_club?.name }}
+                  </p>
+                  <img :src="useGetTeamImage(game?.away_club?.id)" class="w-[20px]" alt="logo" />
+                </div>
               </div>
             </div>
           </div>
@@ -304,17 +312,23 @@ watch(selectedDate, () => {
                 v-for="game in games?.[date.format('YYYY-MM-DD')]"
                 class="flex items-center w-full justify-between"
                 :key="game.id"
+                @click="
+                  () => {
+                    selectedDate = date;
+                    changeCalendarShowType('week');
+                  }
+                "
               >
                 <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[12px]" alt="logo" />
                 <div
-                  class="flex items-center text-xs"
+                  class="flex items-center text-xs text-secondary"
                   v-if="game?.home_score !== null && game?.away_score !== null"
                 >
-                  <p :class="{ 'text-secondary': game?.home_score > game?.away_score }">
+                  <p :class="{ 'text-black': game?.home_score > game?.away_score }">
                     {{ game?.home_score ?? 0 }}
                   </p>
                   :
-                  <p :class="{ 'text-secondary': game?.away_score > game?.home_score }">
+                  <p :class="{ 'text-black': game?.away_score > game?.home_score }">
                     {{ game?.away_score ?? 0 }}
                   </p>
                 </div>
