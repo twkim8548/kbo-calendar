@@ -1,25 +1,25 @@
 export const useGetTeamImage = (id: number) => {
   switch (id) {
     case 1:
-      return '/src/assets/logos/logo_heroes.png';
+      return '@/assets/logos/logo_heroes.png';
     case 2:
-      return '/src/assets/logos/logo_lions.png';
+      return '@/assets/logos/logo_lions.png';
     case 3:
-      return '/src/assets/logos/logo_twins.png';
+      return '@/assets/logos/logo_twins.png';
     case 4:
-      return '/src/assets/logos/logo_wiz.png';
+      return '@/assets/logos/logo_wiz.png';
     case 5:
-      return '/src/assets/logos/logo_landers.png';
+      return '@/assets/logos/logo_landers.png';
     case 6:
-      return '/src/assets/logos/logo_dinos.png';
+      return '@/assets/logos/logo_dinos.png';
     case 7:
-      return '/src/assets/logos/logo_bears.png';
+      return '@/assets/logos/logo_bears.png';
     case 8:
-      return '/src/assets/logos/logo_tigers.png';
+      return '@/assets/logos/logo_tigers.png';
     case 9:
-      return '/src/assets/logos/logo_giants.png';
+      return '@/assets/logos/logo_giants.png';
     case 10:
-      return '/src/assets/logos/logo_eagels.png';
+      return '@/assets/logos/logo_eagels.png';
   }
 };
 
