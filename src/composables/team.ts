@@ -1,25 +1,36 @@
+import heroesLogo from '@/assets/logos/logo_heroes.png';
+import lionsLogo from '@/assets/logos/logo_lions.png';
+import twinsLogo from '@/assets/logos/logo_twins.png';
+import wizLogo from '@/assets/logos/logo_wiz.png';
+import landersLogo from '@/assets/logos/logo_landers.png';
+import dinosLogo from '@/assets/logos/logo_dinos.png';
+import bearsLogo from '@/assets/logos/logo_bears.png';
+import tigersLogo from '@/assets/logos/logo_tigers.png';
+import giantsLogo from '@/assets/logos/logo_giants.png';
+import eagelsLogo from '@/assets/logos/logo_eagels.png';
+
 export const useGetTeamImage = (id: number) => {
   switch (id) {
     case 1:
-      return '@/assets/logos/logo_heroes.png';
+      return heroesLogo;
     case 2:
-      return '@/assets/logos/logo_lions.png';
+      return lionsLogo;
     case 3:
-      return '@/assets/logos/logo_twins.png';
+      return twinsLogo;
     case 4:
-      return '@/assets/logos/logo_wiz.png';
+      return wizLogo;
     case 5:
-      return '@/assets/logos/logo_landers.png';
+      return landersLogo;
     case 6:
-      return '@/assets/logos/logo_dinos.png';
+      return dinosLogo;
     case 7:
-      return '@/assets/logos/logo_bears.png';
+      return bearsLogo;
     case 8:
-      return '@/assets/logos/logo_tigers.png';
+      return tigersLogo;
     case 9:
-      return '@/assets/logos/logo_giants.png';
+      return giantsLogo;
     case 10:
-      return '@/assets/logos/logo_eagels.png';
+      return eagelsLogo;
   }
 };
 
