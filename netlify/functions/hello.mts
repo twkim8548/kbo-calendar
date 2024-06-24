@@ -1,19 +1,25 @@
 import { builder, Handler } from '@netlify/functions';
-import puppeteer from 'puppeteer';
-import chromium from 'chrome-aws-lambda';
+import chromium from '@sparticuz/chromium-min';
 
 
 const myHandler: Handler = async (event, context) => {
   let browser;
+  let puppeteer;
+
+  if (process.env.NETLIFY_DEV) {
+    puppeteer = await import('puppeteer');
+  } else {
+    puppeteer = await import('puppeteer-core');
+  }
   if (process.env.NETLIFY_DEV) {
     browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   } else {
-    browser = await chromium.puppeteer.launch({
-      executablePath: await chromium.executablePath,
+    browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath("/opt/chromium"),
       headless: chromium.headless,
     });
   }
