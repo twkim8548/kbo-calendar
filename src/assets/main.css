@@ -29,6 +29,11 @@ body {
     font-style: normal;
 }
 
+.modal-layout {
+    @apply absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.1)] z-[9999]
+}
+
+
 .fade-enter-active {
     animation: fade .05s ;
 }

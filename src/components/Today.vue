@@ -4,6 +4,7 @@ import { useGetTeamImage, useGetTeamNaverInitial } from '@/composables/team';
 import { useGameStore } from '@/stores/game';
 import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useContentsStore } from '@/stores/contents';
 
 const gameStore = useGameStore();
 
@@ -20,6 +21,8 @@ onMounted(() => {
     dayjs().hour(0).minute(0).second(0),
     dayjs().hour(23).minute(59).second(59),
   );
+
+  useContentsStore().selectYoutubes();
 });
 </script>
 
@@ -31,7 +34,7 @@ onMounted(() => {
       </p>
       <p class="text-xl font-bold text-primary">오늘의 경기</p>
     </div>
-    <div class="flex flex-col gap-[20px] items-center">
+    <div class="flex flex-col gap-[20px] items-center" v-if="games?.[dayjs().format('YYYY-MM-DD')]">
       <div
         class="flex items-center gap-[5px]"
         v-for="game in games?.[dayjs().format('YYYY-MM-DD')]"
@@ -63,6 +66,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <div v-else>오늘은 경기가 없어요.. 대신 이런 영상은 어떄요?</div>
   </div>
 </template>
 
