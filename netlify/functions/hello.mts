@@ -16,6 +16,7 @@ const myHandler: Handler = async (event, context) => {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   } else {
+    console.log(await chromium.executablePath())
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
