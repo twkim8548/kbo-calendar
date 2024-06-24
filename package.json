@@ -13,10 +13,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@netlify/functions": "^2.8.0",
     "@supabase/supabase-js": "^2.43.5",
     "dayjs": "^1.11.11",
     "firebase": "^10.12.2",
     "pinia": "^2.1.7",
+    "puppeteer": "^22.12.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

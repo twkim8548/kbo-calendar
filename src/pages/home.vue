@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Calendar from '@/components/Calendar.vue';
 import Today from '@/components/Today.vue';
 
 const showType = ref('today');
+
+onMounted(() => {});
 </script>
 <template>
   <main class="flex flex-col gap-[20px]">
