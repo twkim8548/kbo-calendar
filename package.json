@@ -14,12 +14,12 @@
   },
   "dependencies": {
     "@netlify/functions": "^2.8.0",
-    "@sparticuz/chromium": "^123.0.1",
+    "@sparticuz/chromium": "^121.0.0",
     "@supabase/supabase-js": "^2.43.5",
     "dayjs": "^1.11.11",
     "firebase": "^10.12.2",
     "pinia": "^2.1.7",
-    "puppeteer-core": "^21.3.8",
+    "puppeteer-core": "21.9.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

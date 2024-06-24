@@ -16,13 +16,10 @@ const myHandler: Handler = async (event, context) => {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   } else {
-    console.log(await chromium.executablePath())
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(
-        "/var/task/node_modules/@sparticuz/chromium/bin"
-      ),
+      executablePath: await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar'),
       headless: chromium.headless,
     });
   }
