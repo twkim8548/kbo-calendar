@@ -8,8 +8,8 @@ const showType = ref('today');
 const data = ref();
 
 onMounted(async () => {
-  data.value = await crawlingGames('2024-06-24');
-  console.log(data.value);
+  // data.value = await crawlingGames('2024-06-24');
+  // console.log(data.value);
 });
 </script>
 <template>
