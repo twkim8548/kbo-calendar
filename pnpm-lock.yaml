@@ -8,8 +8,8 @@ dependencies:
   '@netlify/functions':
     specifier: ^2.8.0
     version: 2.8.0(@opentelemetry/api@1.9.0)
-  '@sparticuz/chromium-min':
-    specifier: '123'
+  '@sparticuz/chromium':
+    specifier: ^123.0.1
     version: 123.0.1
   '@supabase/supabase-js':
     specifier: ^2.43.5
@@ -1454,8 +1454,8 @@ packages:
     resolution: {integrity: sha512-qC/xYId4NMebE6w/V33Fh9gWxLgURiNYgVNObbJl2LZv0GUUItCcCqC5axQSwRaAgaxl2mELq1rMzlswaQ0Zxg==}
     dev: true
 
-  /@sparticuz/chromium-min@123.0.1:
-    resolution: {integrity: sha512-xB0lGecfZQf1rQZi+x0vA97zrrDBH5opgrZIxzI+ITrwXKeJtBOrXMv5L2dEpHDq9bMBXXhdGap0P7iCDSUvPg==}
+  /@sparticuz/chromium@123.0.1:
+    resolution: {integrity: sha512-RPrA99xrddbXXZjhUH1WZkTCK3QDQ77t/0y+vULtiW1uAlWLBxorxGnNTuzBDk6eNolxOVFrXZ2aoAN+/eB5TA==}
     engines: {node: '>= 16'}
     dependencies:
       follow-redirects: 1.15.6

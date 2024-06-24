@@ -1,5 +1,5 @@
 import { builder, Handler } from '@netlify/functions';
-import chromium from '@sparticuz/chromium-min';
+import chromium from '@sparticuz/chromium';
 
 
 const myHandler: Handler = async (event, context) => {
@@ -19,7 +19,7 @@ const myHandler: Handler = async (event, context) => {
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath("/opt/chromium"),
+      executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     });
   }

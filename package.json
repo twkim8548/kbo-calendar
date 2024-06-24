@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@netlify/functions": "^2.8.0",
-    "@sparticuz/chromium-min": "123",
+    "@sparticuz/chromium": "^123.0.1",
     "@supabase/supabase-js": "^2.43.5",
     "dayjs": "^1.11.11",
     "firebase": "^10.12.2",
