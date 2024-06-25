@@ -8,7 +8,7 @@ import IconMenu from '@/assets/icons/IconMenu.vue';
   >
     <div class="flex gap-[4px] items-center cursor-default">
       <img src="/logo.png" class="w-[40px]" alt="logo" />
-      <p class="font-bold text-[20px]">야구 달력</p>
+      <p class="font-bold text-[20px]">크보 달력</p>
     </div>
     <icon-menu class="cursor-pointer w-[25px] h-[25px]" />
   </div>

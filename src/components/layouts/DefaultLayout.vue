@@ -1,18 +1,28 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import defaultHeader from '@/components/Header.vue';
 import IconMenu from '@/assets/icons/IconMenu.vue';
+import { onBeforeMount, ref, watch } from 'vue';
+
+const route = useRoute();
+const isSplash = ref(true);
+
+watch(route, () => {
+  if (route.path !== '/') {
+    isSplash.value = false;
+  }
+});
 </script>
 
 <template>
   <div
     class="max-w-[600px] w-full h-[100dvh] flex flex-col bg-background overflow-auto scrollbar-hide"
   >
-    <default-header v-if="$route.name !== '/'" />
+    <default-header v-if="!isSplash" />
     <main class="flex flex-col gap-[20px] flex-1">
       <div
         class="overflow-x-auto flex items-center shrink-0 justify-center gap-[10px]"
-        v-if="$route.name !== '/'"
+        v-if="!isSplash"
       >
         <button
           class="px-[4px] py-[2px] border rounded-md text-xs shadow-sm cursor-pointer"

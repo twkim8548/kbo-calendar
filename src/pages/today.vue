@@ -5,6 +5,8 @@ import { useGameStore } from '@/stores/game';
 import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useContentsStore } from '@/stores/contents';
+import { Carousel, Slide, Navigation, Pagination } from 'vue3-carousel';
+import 'vue3-carousel/dist/carousel.css';
 
 const gameStore = useGameStore();
 const contentStore = useContentsStore();
@@ -46,7 +48,7 @@ onMounted(() => {
         <p class="text-xl font-bold text-primary">오늘의 경기</p>
       </div>
       <div
-        class="flex flex-col gap-[20px] items-center"
+        class="grid grid-cols-1 gap-[20px] items-center"
         v-if="games?.[dayjs().format('YYYY-MM-DD')]"
       >
         <div
@@ -54,7 +56,7 @@ onMounted(() => {
           v-for="game in games?.[dayjs().format('YYYY-MM-DD')]"
           :key="`today${game.id}`"
         >
-          <div class="flex items-center gap-[10px]">
+          <div class="flex items-center gap-[10px] w-full justify-between">
             <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[50px]" alt="logo" />
             <div class="flex flex-col items-center gap-[5px]">
               <div class="flex items-center gap-[5px]">
@@ -92,17 +94,23 @@ onMounted(() => {
     </div>
     <div class="flex flex-col gap-[5px] w-full" v-if="youtubes?.length > 0">
       <p class="text-xl font-bold text-primary self-center">이런 영상은 어때요?</p>
-      <div class="flex overflow-x-auto gap-[10px] w-full">
-        <iframe
-          v-for="youtube in youtubes"
-          :src="`https://www.youtube.com/embed/${youtube?.id?.videoId}`"
-          class="border-none overflow-visible shrink-0 w-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          width="500"
-          height="400"
-        />
-      </div>
+      <carousel :items-to-show="1" :wrap-around="true">
+        <slide v-for="(youtube, index) in youtubes" :key="`youtube${index}`">
+          <iframe
+            :src="youtube?.link"
+            class="border-none overflow-visible shrink-0 w-full"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            width="500"
+            height="400"
+          />
+        </slide>
+
+        <template #addons>
+          <navigation />
+          <pagination />
+        </template>
+      </carousel>
     </div>
   </div>
 </template>

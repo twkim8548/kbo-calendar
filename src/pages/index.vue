@@ -16,7 +16,7 @@ onMounted(() => {
   <transition name="intro">
     <div class="items-center justify-center flex flex-col w-full h-full transition" v-if="isShow">
       <img src="/img_splash.png" alt="img" />
-      <p class="text-5xl font-bold">야구 달력</p>
+      <p class="text-5xl font-bold">크보 달력</p>
     </div>
   </transition>
 </template>

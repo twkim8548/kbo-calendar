@@ -51,14 +51,6 @@ export const initApiInstance = () => {
         document.body.style.cursor = '';
       }
       err = err?.response ?? err;
-      if (err?.status === 401 || err?.status === 403) {
-        return router.replace({
-          name: '/',
-          query: { error: err?.data?.message ?? err?.data?.error },
-        });
-      }
-      if (err?.status === 500) {
-      }
       return Promise.reject(err);
     },
   );
