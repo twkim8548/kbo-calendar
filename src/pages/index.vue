@@ -7,7 +7,7 @@ const isShow = ref(false);
 onMounted(() => {
   isShow.value = true;
   setTimeout(() => {
-    router.replace({ path: '/home' });
+    router.replace({ path: '/today' });
   }, 2000);
 });
 </script>

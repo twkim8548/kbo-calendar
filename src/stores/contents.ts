@@ -12,7 +12,7 @@ export const useContentsStore = defineStore('contents', () => {
       type: 'video',
       key: import.meta.env.VITE_GOOGLE_KEY,
     }).then((res) => {
-      console.log(res);
+      youtubes.value = res?.data?.items;
     });
   };
 
