@@ -19,7 +19,7 @@ watch(route, () => {
     class="max-w-[600px] w-full h-[100dvh] flex flex-col bg-background overflow-auto scrollbar-hide"
   >
     <default-header v-if="!isSplash" />
-    <main class="flex flex-col gap-[20px] flex-1">
+    <main class="flex flex-col gap-[20px] flex-1 pt-[10px] pb-[30px]">
       <div
         class="overflow-x-auto flex items-center shrink-0 justify-center gap-[10px]"
         v-if="!isSplash"

@@ -21,14 +21,15 @@ export const useContentsStore = defineStore('contents', () => {
       }
 
       const lastSelectedAt = dayjs(data[0].created_at);
-      if (lastSelectedAt.diff(dayjs(), 'h') <= 24) {
+      console.log(lastSelectedAt.format('YYYY-MM-DD hh:mm:ss'));
+      console.log(dayjs().diff(dayjs('2024-06-25'), 'h'));
+      if (dayjs().diff(lastSelectedAt, 'h') <= 24) {
         const { data, error } = await supabase
           .from('contents')
           .select()
           .eq('type', 1)
           .order('created_at', { ascending: false })
           .limit(5);
-
         if (!error) {
           new Error(error?.message);
         }
@@ -45,13 +46,14 @@ export const useContentsStore = defineStore('contents', () => {
         videoEmbeddable: 'true',
         key: import.meta.env.VITE_GOOGLE_KEY,
       })
-        .then((res) => {
-          youtubes.value = insertYoutubes(
+        .then(async (res) => {
+          youtubes.value = await insertYoutubes(
             res?.data?.items.map((it: any) => ({
               link: `https://www.youtube.com/embed/${it?.id?.videoId}`,
               type: 1,
             })),
           );
+          console.log(youtubes.value);
         })
         .catch((err) => {
           new Error(err.message);
@@ -68,7 +70,6 @@ export const useContentsStore = defineStore('contents', () => {
       return;
     }
     await supabase.from('log_crawling').insert({ type: 3, description: dayjs().toISOString() });
-    console.log(data);
     return data;
   };
 

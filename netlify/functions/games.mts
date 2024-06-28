@@ -1,6 +1,7 @@
-import { builder, Handler, Context, Config } from '@netlify/functions';
+import { builder, Handler } from '@netlify/functions';
 import chromium from '@sparticuz/chromium';
 import dayjs from 'dayjs';
+import { createClient } from '@supabase/supabase-js';
 
 
 const selectGames: Handler = async (event, context) => {
@@ -21,6 +22,7 @@ const selectGames: Handler = async (event, context) => {
   }
   if (process.env.NETLIFY_DEV) {
     browser = await puppeteer.launch({
+      headless: false,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   } else {
@@ -51,12 +53,20 @@ const selectGames: Handler = async (event, context) => {
 
     rows.forEach(row => {
       const cells = row.querySelectorAll('td');
-      const rowData = [];
+      const rowData = {
+        match_day: "",
+        home_club_id: 0,
+        away_club_id: 0,
+        away_score: null,
+        home_score: null,
+        stadium_id: null,
+      };
       cells.forEach(cell => {
         const text = cell.innerText;
+        console.log(text, cell.className);
         switch (cell.className) {
           case 'time':
-            rowData.push(`${dateStr} ${text.slice(0, -6)}:00+09`);
+            rowData['match_day'] = (`${dateStr} ${text.slice(0, -6)}:00+09`).replace(" 알림", "");
             break;
           case 'l_team':
           case 'r_team':
@@ -83,28 +93,68 @@ const selectGames: Handler = async (event, context) => {
                 return (10);
               }
             };
-            rowData.push(getId(text));
+            if (cell.className === 'l_team') {
+              rowData['away_club_id'] = (getId(text));
+            } else {
+              rowData['home_club_id'] = (getId(text));
+            }
             break;
           case 'score':
             if (text.includes(':')) {
-              rowData.push(parseInt(text.slice(0, text.indexOf(':'))));
-              rowData.push(parseInt(text.slice(text.indexOf(':') + 2)));
-            } else {
-              rowData.push(text);
-              rowData.push(text);
+              const homeScore = parseInt(text.slice(text.indexOf(':') + 2));
+              const awayScore = parseInt(text.slice(0, text.indexOf(':')));
+              rowData['home_score'] = homeScore;
+              rowData['away_score'] = awayScore;
+              if (homeScore > awayScore) {
+                rowData['result'] = '승'
+              } else if (homeScore < awayScore) {
+                rowData['result'] = '패'
+              } else {
+                rowData['result'] = '무'
+              }
             }
             break;
           case 'place':
-            rowData.push(text);
-            // if (text.includes(':')) {
-            //     rowData.push(parseInt(text.slice(0, text.indexOf(':'))))
-            //     rowData.push(parseInt(text.slice(text.indexOf(':') + 2)))
-            // } else {
-            //     rowData.push(text);
-            // }
+            const getStadiumId = (stadium) => {
+              if (stadium.includes('창원')) {
+                return 5
+              } else if (stadium.includes('수원')) {
+                return 3
+              } else if (stadium.includes('사직')) {
+                return 8
+              } else if (stadium.includes('대전')) {
+                return 12
+              } else if (stadium.includes('이천')) {
+                return 15
+              } else if (stadium.includes('대구')) {
+                return 10
+              } else if (stadium.includes('잠실')) {
+                return 1
+              } else if (stadium.includes('문학')) {
+                return 4
+              } else if (stadium.includes('광주')) {
+                return 6
+              } else if (stadium.includes('고척')) {
+                return 2
+              } else if (stadium.includes('청주')) {
+                return 13
+              } else if (stadium.includes('울산')) {
+                return 9
+              } else if (stadium.includes('포항')) {
+                return 11
+              }
+            }
+            rowData['stadium_id'] = getStadiumId(text);
             break;
+          case 'btns': {
+            if (text === '경기취소') {
+              rowData['is_cancel'] = true;
+            } else {
+              rowData['is_cancel'] = false;
+            }
+            break;
+          }
           default:
-            rowData.push(text);
             break;
         }
       });
@@ -113,11 +163,25 @@ const selectGames: Handler = async (event, context) => {
     return tableData;
   }, dateToString);
   fullData = [...fullData, ...data];
-
   console.log(fullData)
 
+  const supabase = createClient(process.env.VITE_SUPABASE_PROJECT_URL, process.env.VITE_SUPABASE_ANON_KEY);
+
+  const { error } =
+    await supabase.from('games')
+      .upsert(fullData, {onConflict: ['match_day', 'home_club_id', 'away_club_id']})
+      .select();
+  console.log(error)
+
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+    'Content-Type': 'application/json; charset=utf-8;'
+  };
   return {
     statusCode: 200,
+    headers,
     body: JSON.stringify({ message: 'Success', data: fullData }),
   };
 };

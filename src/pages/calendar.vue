@@ -5,6 +5,7 @@ import { onMounted, ref, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
 import { storeToRefs } from 'pinia';
 import { days, getWeekOfMonth, useDayjs } from '@/composables/date';
+import { crawlingGames } from '@/composables/crawling';
 
 const gameStore = useGameStore();
 
@@ -45,6 +46,7 @@ const initCalendar = () => {
       break;
     }
     case 'day': {
+      // crawlingGames(selectedDate.value.format('YYYY-MM-DD'));
       dates.value.push(selectedDate.value);
       break;
     }
@@ -70,6 +72,13 @@ const clickPrev = () => {
       if (selectedDate.value.week() >= 10) {
         selectedDate.value = selectedDate.value.subtract(1, 'week');
       }
+      break;
+    }
+    case 'day': {
+      if (selectedDate.value.week() >= 10) {
+        selectedDate.value = selectedDate.value.subtract(1, 'day');
+      }
+      break;
     }
   }
 };
@@ -86,6 +95,13 @@ const clickNext = () => {
       if (selectedDate.value.week() < 40) {
         selectedDate.value = selectedDate.value.add(1, 'week');
       }
+      break;
+    }
+    case 'day': {
+      if (selectedDate.value.week() >= 10) {
+        selectedDate.value = selectedDate.value.add(1, 'day');
+      }
+      break;
     }
   }
 };
@@ -267,7 +283,9 @@ watch(selectedDate, () => {
                     {{ game?.away_score ?? 0 }}
                   </p>
                 </div>
-                <div v-else class="flex items-center text-xs text-gray-400">예정</div>
+                <div v-else class="flex items-center text-xs text-gray-400">
+                  {{ dayjs(game?.match_day).format('HH:mm') }} 예정
+                </div>
 
                 <div class="flex flex-col gap-[3px] items-center">
                   <p class="text-xs break-keep text-center">

@@ -4,7 +4,7 @@ import IconMenu from '@/assets/icons/IconMenu.vue';
 
 <template>
   <div
-    class="flex justify-between items-center h-[50px] p-[10px] sticky top-0 w-full bg-background self-center"
+    class="flex justify-between items-center h-[50px] p-[10px] sticky top-0 w-full bg-background self-center z-[1]"
   >
     <div class="flex gap-[4px] items-center cursor-default">
       <img src="/logo.png" class="w-[40px]" alt="logo" />

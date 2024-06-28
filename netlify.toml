@@ -5,3 +5,11 @@ publish = "dist"
 from = "/*"
 to = "index.html"
 status = 200
+
+[[plugins]]
+package = "@netlify/plugin-schedule"
+[plugins.inputs]
+functions = [
+    { function = "today-game", schedule = "59 14 * * *" },
+    { function = "today-game", schedule = "5 15 * * *" }
+]
