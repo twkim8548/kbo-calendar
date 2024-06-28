@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { createClient } from '@supabase/supabase-js';
 
 
-const selectGames: Handler = async (event, context) => {
+const selectTodayGames: Handler = async (event, context) => {
   console.log("Date: ", dayjs().format('YYYY-MM-DD'));
 
   let browser;
@@ -31,9 +31,37 @@ const selectGames: Handler = async (event, context) => {
 
   const page = await browser.newPage();
 
-  const searchDate = dayjs().format('YYYY년+M월+D일+야구경기일정');
+  const fullData = [];
+
+  for (let i = 0; i < 2; i++) {
+    let searchDate = dayjs().add(i, 'd').format('YYYY년+M월+D일+야구경기일정');
+    let data = await getData(page, searchDate);
+    await insertData(data);
+    fullData.push(data);
+  }
+
+  if (browser) {
+    browser.close();
+  }
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+    'Content-Type': 'application/json; charset=utf-8;'
+  };
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({ message: 'Success', data: fullData }),
+  };
+};
+
+const handler = builder(selectTodayGames);
+
+export { handler };
+
+const getData = async (page, searchDate: string) => {
   await page.goto(`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${searchDate}`);
-  let fullData = [];
 
   await page.waitForSelector('#main_pack > section.sc_new.cs_sportsdb._cs_sports_schedule');
   const current = await page.$eval('#main_pack > section.sc_new.cs_sportsdb._cs_sports_schedule > div > div.api_cs_wrap > div.db_area._schedule_info > div.nv_date > strong', el => el.textContent.slice(0, -4));
@@ -55,7 +83,6 @@ const selectGames: Handler = async (event, context) => {
       };
       cells.forEach(cell => {
         const text = cell.innerText;
-        console.log(text, cell.className);
         switch (cell.className) {
           case 'time':
             rowData['match_day'] = (`${dateStr} ${text.slice(0, -6)}:00+09`).replace(" 알림", "");
@@ -154,33 +181,18 @@ const selectGames: Handler = async (event, context) => {
     });
     return tableData;
   }, dateToString);
-  fullData = [...fullData, ...data];
-  console.log(fullData)
-  if (browser) {
-    browser.close();
-  }
+
+  console.log(data);
+  return data;
+}
+
+const insertData = async (data: any) => {
 
   const supabase = createClient(process.env.VITE_SUPABASE_PROJECT_URL, process.env.VITE_SUPABASE_ANON_KEY);
 
   const { error } =
     await supabase.from('games')
-      .upsert(fullData, {onConflict: ['match_day', 'home_club_id', 'away_club_id']})
+      .upsert(data, {onConflict: ['match_day', 'home_club_id', 'away_club_id']})
       .select();
   console.log(error)
-
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-    'Content-Type': 'application/json; charset=utf-8;'
-  };
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({ message: 'Success', data: fullData }),
-  };
-};
-
-const handler = builder(selectGames);
-
-export { handler };
+}

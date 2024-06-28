@@ -8,4 +8,3 @@ status = 200
 
 [functions."today-game"]
 schedule = "55 14 * * *"
-schedule = "5 15 * * *"
