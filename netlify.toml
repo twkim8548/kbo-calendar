@@ -6,8 +6,10 @@ from = "/*"
 to = "index.html"
 status = 200
 
-[[functions."today-game"]]
+[[scheduled_functions]]
+name = "today-game"
 schedule = "55 14 * * *"
 
-[[functions."today-game"]]
+[[scheduled_functions]]
+name = "today-game"
 schedule = "5 15 * * *"
