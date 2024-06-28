@@ -156,6 +156,9 @@ const selectGames: Handler = async (event, context) => {
   }, dateToString);
   fullData = [...fullData, ...data];
   console.log(fullData)
+  if (browser) {
+    browser.close();
+  }
 
   const supabase = createClient(process.env.VITE_SUPABASE_PROJECT_URL, process.env.VITE_SUPABASE_ANON_KEY);
 

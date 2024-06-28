@@ -2,7 +2,7 @@ import { useApi } from '@/composables/api';
 import { supabase } from '@/lib/supabaseClient';
 
 export const crawlingGames = async (date: string) => {
-  await useApi('GET', '/.netlify/functions/hello', { date: date })
+  await useApi('GET', '/.netlify/functions/games', { date: date })
     .then((response) => {
       console.log(response);
       return response;
