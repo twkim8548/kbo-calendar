@@ -10,7 +10,7 @@ export const useGameStore = defineStore('game', () => {
     const { data } = await supabase
       .from('games')
       .select(
-        `id, home_club_id, home_club:clubs!games_home_club_id_fkey (id, name, bg_color), away_club_id, away_club:clubs!games_away_club_id_fkey (id, name), stadium_id, stadium:stadiums!games_stadium_id_fkey (id, name, address), home_score, away_score, match_day`,
+        `id, home_club_id, home_club:clubs!games_home_club_id_fkey (id, name, bg_color), away_club_id, away_club:clubs!games_away_club_id_fkey (id, name), stadium_id, stadium:stadiums!games_stadium_id_fkey (id, name, address), home_score, away_score, match_day, is_cancel`,
       )
       .order('home_club_id')
       .gte('match_day', startDate.hour(0).minute(0).second(0).toISOString())

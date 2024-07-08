@@ -236,6 +236,7 @@ watch(selectedDate, () => {
     <main class="shadow ring-1 ring-black ring-opacity-5 lg:flex lg:flex-auto lg:flex-col">
       <div
         class="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:flex-none"
+        v-if="calendarShowType !== 'day'"
       >
         <div
           class="flex flex-col items-center justify-center bg-white py-2"
@@ -251,43 +252,98 @@ watch(selectedDate, () => {
         </div>
       </div>
       <div class="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
-        <div v-if="calendarShowType === 'week'" class="w-full grid grid-cols-7 grid-rows-1 gap-px">
-          <div
-            v-for="date in dates"
-            :key="date.toString()"
-            type="button"
-            class="flex flex-col hover:bg-gray-100 focus:z-10 min-h-[130px] bg-white"
-          >
-            <div class="flex flex-col h-full">
+        <div v-if="calendarShowType === 'day'" class="w-full flex flex-col">
+          <div class="flex flex-col h-full">
+            <div
+              v-for="game in games?.[selectedDate.format('YYYY-MM-DD')]"
+              class="flex flex-col items-center w-full justify-center border-b border-b-gray-200 h-[200px] text-white gap-[10px] px-[5px]"
+              :style="{ backgroundColor: game?.home_club?.bg_color }"
+              :key="game.id"
+            >
+              <div class="flex flex-col gap-[3px] items-center">
+                <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[50px]" alt="logo" />
+                <p class="text-xs break-keep text-center">
+                  {{ game?.home_club?.name }}
+                </p>
+              </div>
+              <div class="flex items-center text-xs text-gray-400 text-center">
+                {{ game?.stadium?.name }}
+              </div>
               <div
-                v-for="game in games?.[date.format('YYYY-MM-DD')]"
-                class="flex flex-col items-center w-full justify-center border-b border-b-gray-200 h-[200px] text-white gap-[10px] px-[5px]"
-                :style="{ backgroundColor: game?.home_club?.bg_color }"
-                :key="game.id"
+                class="flex items-center text-xs gap-[3px] text-white font-normal"
+                v-if="game?.home_score !== null && game?.away_score !== null"
               >
+                <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
+                  {{ game?.home_score ?? 0 }}
+                </p>
+                :
+                <p :class="{ 'font-bold': game?.away_score > game?.home_score }">
+                  {{ game?.away_score ?? 0 }}
+                </p>
+              </div>
+              <div v-else-if="game?.is_cancel" class="flex items-center text-xs text-gray-400">
+                취소
+              </div>
+              <div v-else class="flex items-center text-xs text-gray-400 text-center">
+                {{ dayjs(game?.match_day).format('HH:mm') }} 예정
+              </div>
+              <div class="flex flex-col gap-[3px] items-center">
                 <div class="flex flex-col gap-[3px] items-center">
-                  <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[20px]" alt="logo" />
                   <p class="text-xs break-keep text-center">
-                    {{ game?.home_club?.name }}
+                    {{ game?.away_club?.name }}
                   </p>
+                  <img :src="useGetTeamImage(game?.away_club?.id)" class="w-[50px]" alt="logo" />
                 </div>
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="calendarShowType === 'week'"
+            class="w-full grid grid-cols-7 grid-rows-1 gap-px"
+          >
+            <div
+              v-for="date in dates"
+              :key="date.toString()"
+              type="button"
+              class="flex flex-col hover:bg-gray-100 focus:z-10 min-h-[130px] bg-white"
+            >
+              <div class="flex flex-col h-full">
                 <div
-                  class="flex items-center text-xs gap-[3px] text-white font-normal"
-                  v-if="game?.home_score !== null && game?.away_score !== null"
+                  v-for="game in games?.[date.format('YYYY-MM-DD')]"
+                  class="flex flex-col items-center w-full justify-center border-b border-b-gray-200 h-[200px] text-white gap-[10px] px-[5px]"
+                  :style="{ backgroundColor: game?.home_club?.bg_color }"
+                  :key="game.id"
+                  @click="
+                    () => {
+                      selectedDate = date;
+                      changeCalendarShowType('day');
+                    }
+                  "
                 >
-                  <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
-                    {{ game?.home_score ?? 0 }}
-                  </p>
-                  :
-                  <p :class="{ 'font-bold': game?.away_score > game?.home_score }">
-                    {{ game?.away_score ?? 0 }}
-                  </p>
-                </div>
-                <div v-else class="flex items-center text-xs text-gray-400">
-                  {{ dayjs(game?.match_day).format('HH:mm') }} 예정
-                </div>
-
-                <div class="flex flex-col gap-[3px] items-center">
+                  <div class="flex flex-col gap-[3px] items-center">
+                    <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[20px]" alt="logo" />
+                    <p class="text-xs break-keep text-center">
+                      {{ game?.home_club?.name }}
+                    </p>
+                  </div>
+                  <div
+                    class="flex items-center text-xs gap-[3px] text-white font-normal"
+                    v-if="game?.home_score !== null && game?.away_score !== null"
+                  >
+                    <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
+                      {{ game?.home_score ?? 0 }}
+                    </p>
+                    :
+                    <p :class="{ 'font-bold': game?.away_score > game?.home_score }">
+                      {{ game?.away_score ?? 0 }}
+                    </p>
+                  </div>
+                  <div v-else-if="game?.is_cancel" class="flex items-center text-xs text-gray-400">
+                    취소
+                  </div>
+                  <div v-else class="flex items-center text-xs text-gray-400 text-center">
+                    {{ dayjs(game?.match_day).format('HH:mm') }} 예정
+                  </div>
                   <p class="text-xs break-keep text-center">
                     {{ game?.away_club?.name }}
                   </p>
@@ -333,7 +389,7 @@ watch(selectedDate, () => {
                 @click="
                   () => {
                     selectedDate = date;
-                    changeCalendarShowType('week');
+                    changeCalendarShowType('day');
                   }
                 "
               >
@@ -350,6 +406,7 @@ watch(selectedDate, () => {
                     {{ game?.away_score ?? 0 }}
                   </p>
                 </div>
+                <div v-else-if="game?.is_cancel" class="flex items-center text-xs">취소</div>
                 <div v-else class="flex items-center text-xs">예정</div>
                 <img :src="useGetTeamImage(game?.away_club?.id)" class="w-[12px]" alt="logo" />
               </div>

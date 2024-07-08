@@ -16,7 +16,7 @@ const { youtubes } = storeToRefs(contentStore);
 
 const openNaverPreview = (date: Dayjs, homeId: number, awayId: number) => {
   window.open(
-    `https://sports.naver.com/game/${date.format('YYYYMMDD')}${useGetTeamNaverInitial(awayId)}${useGetTeamNaverInitial(homeId)}02024`,
+    `https://sports.naver.com/game/${date.format('YYYYMMDD')}${useGetTeamNaverInitial(awayId)}${useGetTeamNaverInitial(homeId)}0${date.format('YYYY')}`,
     '_blank',
   );
 };
