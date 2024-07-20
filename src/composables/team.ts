@@ -7,7 +7,7 @@ import dinosLogo from '@/assets/logos/logo_dinos.png';
 import bearsLogo from '@/assets/logos/logo_bears.png';
 import tigersLogo from '@/assets/logos/logo_tigers.png';
 import giantsLogo from '@/assets/logos/logo_giants.png';
-import eagelsLogo from '@/assets/logos/logo_eagels.png';
+import eagelsLogo from '@/assets/logos/logo_eagles.png';
 
 export const useGetTeamImage = (id: number) => {
   switch (id) {
@@ -82,4 +82,53 @@ export const useGetTeamInitial = (id: number) => {
     case 10:
       return '한';
   }
+};
+
+export const useGetTeam = (name?: string) => {
+  const teams = [
+    {
+      nameEn: 'heroes',
+      nameKo: '키움 히어로즈',
+    },
+    {
+      nameEn: 'lions',
+      nameKo: '삼성 라이온즈',
+    },
+    {
+      nameEn: 'twins',
+      nameKo: '엘지 트윈스',
+    },
+    {
+      nameEn: 'wiz',
+      nameKo: 'KT 위즈',
+    },
+    {
+      nameEn: 'landers',
+      nameKo: 'SSG 랜더스',
+    },
+    {
+      nameEn: 'dinos',
+      nameKo: 'NC 다이노스',
+    },
+    {
+      nameEn: 'bears',
+      nameKo: '두산 베어스',
+    },
+    {
+      nameEn: 'tigers',
+      nameKo: '기아 타이거즈',
+    },
+    {
+      nameEn: 'giants',
+      nameKo: '롯데 자이언츠',
+    },
+    {
+      nameEn: 'eagles',
+      nameKo: '한화 이글스',
+    },
+  ];
+  if (name) {
+    return teams.find(it => it.nameKo === name || it.nameEn === name)
+  }
+  return teams;
 };

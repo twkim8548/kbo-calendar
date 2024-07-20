@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import dayjs, { Dayjs } from 'dayjs';
-import { useGetTeamImage } from '@/composables/team';
+import { useGetTeam, useGetTeamImage } from '@/composables/team';
 import { onMounted, ref, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
 import { storeToRefs } from 'pinia';
 import { days, getWeekOfMonth, useDayjs } from '@/composables/date';
 import { crawlingGames } from '@/composables/crawling';
+import { useClubStore } from '@/stores/club';
 
 const gameStore = useGameStore();
+const clubStore = useClubStore();
 
 const { games } = storeToRefs(gameStore);
+const { clubs } = storeToRefs(clubStore);
 const selectedDate = ref<Dayjs>(dayjs());
 const dates = ref<Dayjs[]>([]);
 const isShowCalendarShowTypeMenu = ref(false);
+const isShowHomeTeamMenu = ref(false);
 const calendarShowType = ref('week');
+const teams = useGetTeam();
 
 const initCalendar = () => {
   dates.value = [];
@@ -108,6 +113,7 @@ const clickNext = () => {
 
 onMounted(() => {
   initCalendar();
+  clubStore.selectClubs();
 });
 
 watch(selectedDate, () => {
@@ -128,34 +134,87 @@ watch(selectedDate, () => {
           <p v-if="calendarShowType === 'week'">{{ getWeekOfMonth(selectedDate) }}주차</p>
           <p v-if="calendarShowType === 'day'">{{ useDayjs()(selectedDate).format('D') }}일</p>
         </div>
-        <div class="relative flex items-center rounded-md bg-white shadow-sm w-fit">
-          <button
-            type="button"
-            class="flex h-6 w-10 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative"
-            @click="clickPrev"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-          <span class="relative -mx-px h-5 w-px bg-gray-300"></span>
-          <button
-            type="button"
-            class="flex h-6 w-10 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative"
-            @click="clickNext"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
+        <div class="flex items-center gap-[5px]">
+          <div class="relative flex items-center rounded-md bg-white shadow-sm w-fit">
+            <button
+              type="button"
+              class="flex h-6 w-10 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative"
+              @click="clickPrev"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path
+                  fill-rule="evenodd"
+                  d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <span class="relative -mx-px h-5 w-px bg-gray-300"></span>
+            <button
+              type="button"
+              class="flex h-6 w-10 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative"
+              @click="clickNext"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path
+                  fill-rule="evenodd"
+                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="relative">
+            <button
+              type="button"
+              class="flex items-center gap-x-1.5 rounded-md bg-white h-6 px-2 py-1 text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              id="home-menu-button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              @click="isShowHomeTeamMenu = !isShowHomeTeamMenu"
+            >
+              홈팀
+              <div class="transition" :class="isShowHomeTeamMenu ? 'rotate-180': ''">
+              <svg
+                class="-mr-1 h-5 w-5 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              </div>
+
+            </button>
+            <transition name="fade">
+              <div
+                class="absolute right-0 z-10 mt-1 w-36 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="home-menu-button"
+                tabindex="-1"
+                v-if="isShowHomeTeamMenu"
+              >
+                <div class="py-1" role="none">
+                  <div
+                    v-for="(club, index) in clubs"
+                    :key="`team${index}`"
+                    class="block px-4 py-2 text-xs cursor-pointer"
+                    :class="
+                      calendarShowType === 'day' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                    "
+                    @click="changeCalendarShowType('day')"
+                  >
+                    {{ club?.name }}
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
       <div class="flex items-center">
@@ -253,25 +312,29 @@ watch(selectedDate, () => {
       </div>
       <div class="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
         <div v-if="calendarShowType === 'day'" class="w-full flex flex-col">
-          <div class="flex flex-col h-full">
+          <div class="flex flex-col h-full"
+               v-if="games?.[selectedDate.format('YYYY-MM-DD')]?.length > 0">
             <div
               v-for="game in games?.[selectedDate.format('YYYY-MM-DD')]"
               class="flex flex-col items-center w-full justify-center border-b border-b-gray-200 h-[200px] text-white gap-[10px] px-[5px]"
               :style="{ backgroundColor: game?.home_club?.bg_color }"
               :key="game.id"
             >
+              <div class="flex items-center text-xs text-gray-400 text-center">
+                {{ game?.stadium?.name }}
+              </div>
               <div class="flex flex-col gap-[3px] items-center">
                 <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[50px]" alt="logo" />
                 <p class="text-xs break-keep text-center">
                   {{ game?.home_club?.name }}
                 </p>
               </div>
-              <div class="flex items-center text-xs text-gray-400 text-center">
-                {{ game?.stadium?.name }}
+              <div v-if="true" class="flex items-center text-xs text-gray-400 text-center">
+                vs
               </div>
               <div
                 class="flex items-center text-xs gap-[3px] text-white font-normal"
-                v-if="game?.home_score !== null && game?.away_score !== null"
+                v-else-if="game?.home_score !== null && game?.away_score !== null"
               >
                 <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
                   {{ game?.home_score ?? 0 }}
@@ -296,6 +359,12 @@ watch(selectedDate, () => {
                 </div>
               </div>
             </div>
+          </div>
+          <div
+            class="bg-white flex items-center justify-center py-[50px] text-lg"
+            v-else
+          >
+            오늘은 경기가 없어요..
           </div>
         </div>
         <div v-if="calendarShowType === 'week'" class="w-full grid grid-cols-7 grid-rows-1 gap-px">
@@ -324,9 +393,12 @@ watch(selectedDate, () => {
                     {{ game?.home_club?.name }}
                   </p>
                 </div>
+                <div v-if="true" class="flex items-center text-xs text-gray-400 text-center">
+                  vs
+                </div>
                 <div
                   class="flex items-center text-xs gap-[3px] text-white font-normal"
-                  v-if="game?.home_score !== null && game?.away_score !== null"
+                  v-else-if="game?.home_score !== null && game?.away_score !== null"
                 >
                   <p :class="{ 'font-bold': game?.home_score > game?.away_score }">
                     {{ game?.home_score ?? 0 }}
@@ -391,9 +463,12 @@ watch(selectedDate, () => {
                 "
               >
                 <img :src="useGetTeamImage(game?.home_club?.id)" class="w-[12px]" alt="logo" />
+                <div v-if="true" class="flex items-center text-xs text-gray-400 text-center">
+                  vs
+                </div>
                 <div
                   class="flex items-center text-xs text-secondary"
-                  v-if="game?.home_score !== null && game?.away_score !== null"
+                  v-else-if="game?.home_score !== null && game?.away_score !== null"
                 >
                   <p :class="{ 'text-black': game?.home_score > game?.away_score }">
                     {{ game?.home_score ?? 0 }}
